@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import 'bootstrap/dist/css/bootstrap.min.css';
+import "bootstrap/dist/css/bootstrap.min.css";
+import { CartProvider } from "../context/CartContext";  // ✅ thêm dòng này
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -19,22 +21,15 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
-      <head>
-        {/* Thêm link Bootstrap CDN */}
-        <link
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-          rel="stylesheet"
-          integrity="sha384-gHkd0ntzWsoV1nP4y4fEjfZ4kF2B8bH64jTn0hTDRXfL0FvKUxEyI2LhI6I4DJhZ"
-          crossOrigin="anonymous"
-        />
-      </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        {children}
+        <CartProvider>
+          {children}
+        </CartProvider>
       </body>
     </html>
   );
