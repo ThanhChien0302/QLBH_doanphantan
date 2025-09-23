@@ -2,21 +2,40 @@ const Product = require("../models/productModel");
 
 // Lấy tất cả sản phẩm
 exports.getProducts = async (req, res) => {
-    const products = await Product.find();
-    res.json(products);
+    try {
+        const products = await Product.find();
+        res.json(products);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
 };
 
-// Thêm sản phẩm (Admin)
+// Thêm sản phẩm (Admin) – có ảnh
 exports.createProduct = async (req, res) => {
-    const product = new Product(req.body);
-    await product.save();
-    res.status(201).json(product);
+    try {
+        const { name, price, quantity } = req.body;
+        const image = req.file ? req.file.path : undefined; // Lấy đường dẫn ảnh nếu có
+
+        const product = new Product({ name, price, quantity, image });
+        await product.save();
+        res.status(201).json(product);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
 };
 
-// Sửa sản phẩm (Admin)
+// Sửa sản phẩm (Admin) – có thể cập nhật ảnh
 exports.updateProduct = async (req, res) => {
     try {
-        const product = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const { name, price, quantity } = req.body;
+        const updateData = { name, price, quantity };
+
+        // Nếu có file ảnh upload mới, cập nhật trường image
+        if (req.file) {
+            updateData.image = req.file.path; // hoặc req.file.filename nếu bạn dùng multer destination + filename
+        }
+
+        const product = await Product.findByIdAndUpdate(req.params.id, updateData, { new: true });
         res.json(product);
     } catch (err) {
         res.status(400).json({ message: err.message });
