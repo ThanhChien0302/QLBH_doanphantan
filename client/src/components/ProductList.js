@@ -3,11 +3,13 @@
 import { useEffect, useState } from "react";
 import api from "../lib/api";
 import ProductForm from "./ProductForm";
+import { useCart } from "../context/CartContext";
 
 export default function ProductList() {
     const [products, setProducts] = useState([]);
     const [role, setRole] = useState(null);
     const [editing, setEditing] = useState(null);
+    const { addToCart } = useCart();
 
     const loadProducts = async () => {
         try {
@@ -27,7 +29,7 @@ export default function ProductList() {
         if (!confirm("Bạn có chắc muốn xóa sản phẩm này?")) return;
         try {
             await api.delete(`/products/${id}`);
-            setProducts(products.filter((p) => p._id !== id));
+            setProducts((prev) => prev.filter((p) => p._id !== id));
         } catch (err) {
             console.error(err);
         }
@@ -43,7 +45,7 @@ export default function ProductList() {
                         <th className="px-4 py-2 border">Tên sản phẩm</th>
                         <th className="px-4 py-2 border">Giá (VND)</th>
                         <th className="px-4 py-2 border">Số lượng</th>
-                        {role === "admin" && <th className="px-4 py-2 border">Hành động</th>}
+                        <th className="px-4 py-2 border">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -60,24 +62,36 @@ export default function ProductList() {
                                 )}
                             </td>
                             <td className="px-4 py-2 border">{p.name}</td>
-                            <td className="px-4 py-2 border">{p.price}</td>
+                            <td className="px-4 py-2 border">
+                                {p.price.toLocaleString("vi-VN")}
+                            </td>
                             <td className="px-4 py-2 border">{p.quantity}</td>
-                            {role === "admin" && (
-                                <td className="px-4 py-2 border flex justify-center gap-2">
+
+                            <td className="px-4 py-2 border flex justify-center gap-2">
+                                {role === "admin" ? (
+                                    <>
+                                        <button
+                                            onClick={() => setEditing(p)}
+                                            className="bg-yellow-500 text-white px-3 py-1 rounded"
+                                        >
+                                            Sửa
+                                        </button>
+                                        <button
+                                            onClick={() => handleDelete(p._id)}
+                                            className="bg-red-500 text-white px-3 py-1 rounded"
+                                        >
+                                            Xóa
+                                        </button>
+                                    </>
+                                ) : (
                                     <button
-                                        onClick={() => setEditing(p)}
-                                        className="bg-yellow-500 text-white px-3 py-1 rounded"
+                                        onClick={() => addToCart(p)}
+                                        className="bg-green-500 text-white px-3 py-1 rounded"
                                     >
-                                        Sửa
+                                        🛒 Mua
                                     </button>
-                                    <button
-                                        onClick={() => handleDelete(p._id)}
-                                        className="bg-red-500 text-white px-3 py-1 rounded"
-                                    >
-                                        Xóa
-                                    </button>
-                                </td>
-                            )}
+                                )}
+                            </td>
                         </tr>
                     ))}
                 </tbody>
