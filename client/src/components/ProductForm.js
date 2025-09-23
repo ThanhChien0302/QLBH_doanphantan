@@ -50,6 +50,7 @@ export default function ProductForm({ onAdd, initialData }) {
         });
       }
 
+      // reset form
       setName("");
       setPrice("");
       setQuantity("");
