@@ -16,10 +16,12 @@ export default function ProductsPage() {
     return (
         <div className="min-h-screen bg-gray-50 p-8">
             <div className="max-w-5xl mx-auto">
-                <h1 className="text-3xl font-bold mb-6 text-center">📦 Quản lý sản phẩm</h1>
+                <h1 className="text-3xl font-bold mb-6 text-center">📦 Cửa hàng quần áo </h1>
 
                 {role === "admin" && (
+                    
                     <div className="mb-8 bg-white p-6 rounded-2xl shadow">
+                        
                         <h2 className="text-xl font-semibold mb-4">➕ Thêm sản phẩm mới</h2>
                         <ProductForm onAdd={reload} />
                     </div>
