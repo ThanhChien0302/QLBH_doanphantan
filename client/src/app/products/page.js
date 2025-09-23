@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import ProductList from "../../components/ProductList";
 import ProductForm from "../../components/ProductForm";
-import { useCart } from "../../context/CartContext";   // ✅
+import { useCart } from "../../context/CartContext"; 
+import Link from "next/link";
 
 export default function ProductsPage() {
     const [role, setRole] = useState(null);
@@ -20,9 +21,15 @@ export default function ProductsPage() {
             <div className="max-w-5xl mx-auto">
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-3xl font-bold">📦 Cửa hàng quần áo</h1>
-                    <button className="bg-blue-500 text-white px-4 py-2 rounded">
-                        🛒 Giỏ hàng ({cart.length})
-                    </button>
+                    {role !== "admin" && (
+                        <Link href="/cart">
+                            <button className="bg-yellow-500 text-black px-4 py-3 rounded hover:bg-yellow-600">
+                                🛒 Giỏ hàng ({cart.length})
+                            </button>
+                        </Link>
+                    )}
+
+
                 </div>
 
                 {role === "admin" && (

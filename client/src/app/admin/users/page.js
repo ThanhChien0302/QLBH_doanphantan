@@ -1,10 +1,12 @@
-import UserList from "../../../components/UserList";
+"use client";
 
-export default function UsersPage() {
+import ProductList from "../components/ProductList";
+
+export default function AdminPage() {
     return (
-        <div>
-            <h1>All Users</h1>
-            <UserList />
+        <div className="p-4">
+            <h1 className="text-2xl font-bold mb-4">Quản lý sản phẩm (Admin)</h1>
+            <ProductList roleProp="admin" />
         </div>
     );
 }
