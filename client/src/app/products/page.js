@@ -39,10 +39,19 @@ export default function ProductsPage() {
                     </div>
                 )}
 
-                <div className="bg-white p-6 rounded-2xl shadow">
-                    <h2 className="text-xl font-semibold mb-4">📋 Danh sách sản phẩm</h2>
+                <div className="bg-white p-6 rounded-2xl shadow mb-6">
+                    <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-xl font-semibold">📋 Danh sách sản phẩm</h2>
+                        <button
+                            onClick={() => router.push("/")}
+                            className="bg-blue-500 text-black font-bold px-4 py-2 rounded hover:bg-blue-600"
+                        >
+                            Xem đơn hàng đã đặt
+                        </button>
+                    </div>
                     <ProductList />
                 </div>
+
             </div>
         </div>
     );
