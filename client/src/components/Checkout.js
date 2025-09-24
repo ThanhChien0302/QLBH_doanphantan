@@ -37,6 +37,7 @@ export default function CheckoutPage() {
                 customer: { fullName, phone, address, email },
                 items: cart.map(item => ({ productId: item._id, quantity: item.quantity }))
             });
+            localStorage.setItem("email", email);
             alert("Mã xác nhận đã được gửi vào email. Vui lòng kiểm tra hộp thư!");
             setStep(2); // chuyển sang bước nhập mã
         } catch (err) {

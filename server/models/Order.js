@@ -14,7 +14,7 @@ const orderSchema = new mongoose.Schema({
         }
     ],
     paymentMethod: { type: String, default: "COD" },
-    status: { type: String, enum: ["pending", "confirmed"], default: "pending" },
+    status: { type: String, enum: ["chờ xác nhận", "đã hoàn thành", "Đã hủy"], default: "chờ xác nhận" },
     createdAt: { type: Date, default: Date.now }
 });
 
