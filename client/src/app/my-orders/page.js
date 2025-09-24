@@ -38,52 +38,122 @@ export default function MyOrdersPage() {
         }
     };
 
+    const getStatusClass = (status) => {
+        switch (status) {
+            case "chờ xác nhận":
+                return "text-yellow-600 bg-yellow-100 px-2 py-1 rounded";
+            case "đã hoàn thành":
+                return "text-green-600 bg-green-100 px-2 py-1 rounded";
+            case "Đã hủy":
+                return "text-red-600 bg-red-100 px-2 py-1 rounded";
+            default:
+                return "text-gray-600 bg-gray-100 px-2 py-1 rounded";
+        }
+    };
+
+    // ✅ Hàm tính tổng tiền fallback nếu order.totalAmount chưa có
+    const calcTotal = (items) => {
+        return items.reduce(
+            (sum, item) =>
+                sum +
+                ((item.price || item.productId?.price || 0) * item.quantity),
+            0
+        );
+    };
+
     return (
-        <div className="min-h-screen bg-gray-50 p-8">
-            <div className="max-w-4xl mx-auto">
-                <h1 className="text-2xl font-bold mb-6">📑 Đơn hàng của tôi</h1>
+        <div className="min-h-screen bg-gray-100 p-8">
+            <div className="max-w-5xl mx-auto">
+                <h1 className="text-3xl font-bold mb-8 text-center text-blue-700">
+                    📑 Đơn hàng của tôi
+                </h1>
 
                 {orders.length === 0 && (
-                    <p>Bạn chưa có đơn hàng nào.</p>
+                    <p className="text-center text-gray-500 text-lg">
+                        Bạn chưa có đơn hàng nào.
+                    </p>
                 )}
 
-                {orders.map(order => (
-                    <div key={order._id} className="bg-white p-4 rounded-xl shadow mb-4">
-                        <p><strong>Mã đơn:</strong> {order._id}</p>
-                        <p><strong>Ngày đặt:</strong> {new Date(order.createdAt).toLocaleString()}</p>
-                        <p><strong>Thanh toán:</strong> {order.paymentMethod}</p>
-                        <p>
-                            <strong>Trạng thái:</strong>{" "}
+                <div className="space-y-6">
+                    {orders.map((order) => (
+                        <div
+                            key={order._id}
+                            className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition"
+                        >
+                            <div className="flex justify-between items-center mb-4">
+                                <h2 className="text-lg font-semibold text-gray-800">
+                                    🆔 Mã đơn: {order._id}
+                                </h2>
+                                <span className={getStatusClass(order.status)}>
+                                    {order.status}
+                                </span>
+                            </div>
+
+                            <p className="text-lg text-yellow-600">
+                                📅 Ngày đặt:{" "}
+                                <span className="font-bold text-green-500">
+                                    {new Date(order.createdAt).toLocaleString()}
+                                </span>
+                            </p>
+
+                            <p className="text-lg text-black-500">
+                                💳 Thanh toán:{" "}
+                                <span className="font-medium text-black-700">
+                                    {order.paymentMethod}
+                                </span>
+                            </p>
+
+                            <div className="mt-4">
+                                <h3 className="font-semibold text-black-700 mb-2">
+                                    📦 Sản phẩm:
+                                </h3>
+                                <ul className="space-y-3">
+                                    {order.items.map((item) => (
+                                        <li
+                                            key={item._id}
+                                            className="border-b pb-2"
+                                        >
+                                            <h3 className="font-semibold text-xl">
+                                                {item.productId?.name || "Sản phẩm"}
+                                            </h3>
+                                            <p className="text-lg text-black-600">
+                                                Số lượng: {item.quantity}
+                                            </p>
+                                            <p className="text-lg text-black-600">
+                                                Giá:{" "}
+                                                {(item.price ||
+                                                    item.productId?.price ||
+                                                    0).toLocaleString("vi-VN")}{" "}
+                                                VND
+                                            </p>
+                                        </li>
+                                    ))}
+                                </ul>
+
+                                {/* ✅ Tổng tiền */}
+                                <p className="text-lg text-blue-600 font-bold mt-3 text-right">
+                                    💰 Tổng tiền:{" "}
+                                    {(order.totalAmount || calcTotal(order.items)).toLocaleString(
+                                        "vi-VN"
+                                    )}{" "}
+                                    VND
+                                </p>
+                            </div>
+
+                            {/* ✅ Nút hủy đơn chỉ hiện nếu đơn đang chờ xác nhận */}
                             {order.status === "chờ xác nhận" && (
-                                <span className="text-yellow-600">Chờ xác nhận</span>
+                                <div className="mt-4 text-right">
+                                    <button
+                                        onClick={() => handleCancel(order._id)}
+                                        className="bg-red-600 text-white font-bold px-4 py-2 rounded-lg hover:bg-red-600 transition"
+                                    >
+                                        ❌ Hủy đơn hàng
+                                    </button>
+                                </div>
                             )}
-                            {order.status === "đã hoàn thành" && (
-                                <span className="text-green-600">Đã hoàn thành</span>
-                            )}
-                            {order.status === "Đã hủy" && (
-                                <span className="text-red-600">Đã hủy</span>
-                            )}
-                        </p>
-
-                        <ul className="mt-2 list-disc ml-6">
-                            {order.items.map(item => (
-                                <li key={item._id}>
-                                    {item.productId?.name || "Sản phẩm"} - SL: {item.quantity}
-                                </li>
-                            ))}
-                        </ul>
-
-                        {/* ✅ Nút hủy đơn chỉ hiện nếu đơn đang chờ xác nhận */}
-                        {order.status === "chờ xác nhận" && (
-                            <button
-                                onClick={() => handleCancel(order._id)}
-                                className="mt-3 bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600"
-                            >
-                                Hủy đơn hàng
-                            </button>
-                        )}
-                    </div>
-                ))}
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );

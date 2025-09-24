@@ -9,7 +9,11 @@ export default function ProductList() {
     const [products, setProducts] = useState([]);
     const [role, setRole] = useState(null);
     const [editing, setEditing] = useState(null);
-    const [visibleCount, setVisibleCount] = useState(8); // số sản phẩm hiển thị cho user
+
+    // số hiển thị riêng cho admin và user
+    const [visibleCountAdmin, setVisibleCountAdmin] = useState(5);
+    const [visibleCountUser, setVisibleCountUser] = useState(8);
+
     const { addToCart } = useCart();
 
     // load sản phẩm từ API
@@ -24,7 +28,6 @@ export default function ProductList() {
 
     useEffect(() => {
         loadProducts();
-        // lấy role client side
         if (typeof window !== "undefined") {
             setRole(localStorage.getItem("role"));
         }
@@ -40,12 +43,7 @@ export default function ProductList() {
         }
     };
 
-    // user xem thêm
-    const handleLoadMore = () => {
-        setVisibleCount((prev) => prev + 8);
-    };
-
-    // layout admin
+    // ========== ADMIN LAYOUT ==========
     if (role === "admin") {
         return (
             <div className="overflow-x-auto">
@@ -61,7 +59,7 @@ export default function ProductList() {
                         </tr>
                     </thead>
                     <tbody>
-                        {products.map((p, index) => (
+                        {products.slice(0, visibleCountAdmin).map((p, index) => (
                             <tr key={p._id} className="text-center">
                                 <td className="px-4 py-2 border">{index + 1}</td>
                                 <td className="px-0 py-0 border h-44 w-44">
@@ -73,20 +71,22 @@ export default function ProductList() {
                                         />
                                     )}
                                 </td>
-                                <td className="px-4 py-2 border">{p.name}</td>
-                                <td className="px-4 py-2 border">{p.price.toLocaleString("vi-VN")}</td>
-                                <td className="px-4 py-2 border">{p.quantity}</td>
+                                <td className="px-4 py-2 border font-bold text-black">{p.name}</td>
+                                <td className="px-4 py-2 border font-bold text-black">
+                                    {p.price.toLocaleString("vi-VN")}
+                                </td>
+                                <td className="px-4 py-2 border font-bold text-black">{p.quantity}</td>
                                 <td className="px-4 py-2 border">
                                     <div className="flex justify-center gap-2">
                                         <button
                                             onClick={() => setEditing(p)}
-                                            className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600"
+                                            className="bg-yellow-500 text-black px-4 py-2 rounded hover:bg-yellow-600"
                                         >
                                             Sửa
                                         </button>
                                         <button
                                             onClick={() => handleDelete(p._id)}
-                                            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                                            className="bg-red-600 text-black px-4 py-2 rounded hover:bg-red-600"
                                         >
                                             Xóa
                                         </button>
@@ -96,6 +96,25 @@ export default function ProductList() {
                         ))}
                     </tbody>
                 </table>
+
+                {/* Nút xem thêm / rút gọn */}
+                <div className="flex justify-center mt-4">
+                    {visibleCountAdmin < products.length ? (
+                        <button
+                            onClick={() => setVisibleCountAdmin((prev) => prev + 5)}
+                            className="bg-blue-500 text-white px-4 py-2 font-bold rounded hover:bg-blue-600"
+                        >
+                            Xem thêm
+                        </button>
+                    ) : products.length > 5 ? (
+                        <button
+                            onClick={() => setVisibleCountAdmin(5)}
+                            className="bg-gray-500 text-white px-4 py-2 font-bold rounded hover:bg-gray-600"
+                        >
+                            Rút gọn
+                        </button>
+                    ) : null}
+                </div>
 
                 {/* Form sửa sản phẩm */}
                 {editing && (
@@ -120,11 +139,11 @@ export default function ProductList() {
         );
     }
 
-    // layout user
+    // ========== USER LAYOUT ==========
     return (
         <div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {products.slice(0, visibleCount).map((p) => (
+                {products.slice(0, visibleCountUser).map((p) => (
                     <div
                         key={p._id}
                         className="border rounded-lg shadow p-4 flex flex-col items-center 
@@ -150,10 +169,10 @@ export default function ProductList() {
                 ))}
             </div>
 
-            {visibleCount < products.length && (
+            {visibleCountUser < products.length && (
                 <div className="flex justify-center mt-4">
                     <button
-                        onClick={handleLoadMore}
+                        onClick={() => setVisibleCountUser((prev) => prev + 8)}
                         className="bg-blue-500 text-white px-4 py-2 font-bold rounded hover:bg-blue-600"
                     >
                         Xem thêm

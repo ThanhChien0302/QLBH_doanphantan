@@ -10,11 +10,13 @@ const orderSchema = new mongoose.Schema({
     items: [
         {
             productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
-            quantity: Number
+            quantity: Number,
+            price: Number
         }
     ],
     paymentMethod: { type: String, default: "COD" },
     status: { type: String, enum: ["chờ xác nhận", "đã hoàn thành", "Đã hủy"], default: "chờ xác nhận" },
+    totalAmount: Number,
     createdAt: { type: Date, default: Date.now }
 });
 
