@@ -47,14 +47,14 @@ export default function CheckoutPage() {
                 customer: { fullName, phone, address, email },
                 items: selectedCartItems.map(item => ({ productId: item._id, quantity: item.quantity }))
             });
-<<<<<<< HEAD
+
             localStorage.setItem("email", email);
             alert("Mã xác nhận đã được gửi vào email. Vui lòng kiểm tra hộp thư!");
             setStep(2); // chuyển sang bước nhập mã
-=======
+
             alert("Mã xác nhận đã gửi vào email!");
             setStep(2);
->>>>>>> ac53f39453e6c341a4bb91de813cd71c72541a37
+
         } catch (err) {
             console.error(err);
             alert("Có lỗi khi gửi mã, vui lòng thử lại.");
