@@ -138,11 +138,11 @@ export default function ProductList() {
                             />
                         )}
                         <h3 className="font-bold mt-2 text-center">{p.name}</h3>
-                        <p className="text-gray-700">{p.price.toLocaleString("vi-VN")} VND</p>
-                        <p className="text-gray-500">Số lượng: {p.quantity}</p>
+                        <p className="text-black-800">{p.price.toLocaleString("vi-VN")} VND</p>
+                        <p className="text-red-500">Số lượng: {p.quantity}</p>
                         <button
                             onClick={() => addToCart(p)}
-                            className="bg-green-500 text-white px-4 py-2 rounded mt-2 w-full hover:bg-green-600"
+                            className="bg-green-500 text-black px-4 py-2 rounded mt-2 w-full hover:bg-green-600"
                         >
                             Thêm vào 🛒
                         </button>
@@ -154,7 +154,7 @@ export default function ProductList() {
                 <div className="flex justify-center mt-4">
                     <button
                         onClick={handleLoadMore}
-                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                        className="bg-blue-500 text-white px-4 py-2 font-bold rounded hover:bg-blue-600"
                     >
                         Xem thêm
                     </button>
