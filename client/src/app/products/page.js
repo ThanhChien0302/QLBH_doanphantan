@@ -28,6 +28,13 @@ export default function ProductsPage() {
                             </button>
                         </Link>
                     )}
+                    {role !== "admin" && (
+                        <Link href="/my-orders">
+                            <button className="bg-yellow-500 text-black px-4 py-3 rounded hover:bg-yellow-600">
+                                Đơn hàng của tôi
+                            </button>
+                        </Link>
+                    )}
 
 
                 </div>

@@ -2,11 +2,12 @@ const OrderCode = require("../models/OrderCode");
 const Order = require("../models/Order");
 const nodemailer = require("nodemailer");
 
+
 const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
+        pass: process.env.PASSWORD_USER
     }
 });
 
@@ -20,7 +21,7 @@ exports.sendCode = async (req, res) => {
         await orderCode.save();
 
         await transporter.sendMail({
-            from: process.env.EMAIL_USER,
+            from: process.env.ADMIN_EMAIL,
             to: customer.email,
             subject: "Mã xác nhận đơn hàng",
             html: `<p>Mã xác nhận của bạn là: <strong>${code}</strong></p>`
@@ -44,7 +45,7 @@ exports.verifyCode = async (req, res) => {
             customer: orderCode.customer,
             items: orderCode.items,
             paymentMethod: "COD",
-            status: "confirmed"
+            status: "chờ xác nhận"
         });
         await order.save();
         await OrderCode.findByIdAndDelete(orderCode._id);
@@ -53,5 +54,41 @@ exports.verifyCode = async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: "Lỗi server khi xác nhận mã" });
+    }
+};
+
+// Lấy tất cả đơn hàng theo email
+exports.getOrdersByEmail = async (req, res) => {
+    try {
+        const { email } = req.params;
+        const orders = await Order.find({ "customer.email": email })
+            .populate("items.productId") // lấy thêm thông tin sản phẩm
+            .sort({ createdAt: -1 });
+
+        res.json(orders);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Lỗi server khi lấy đơn hàng" });
+    }
+};
+// Hủy đơn hàng
+exports.cancelOrder = async (req, res) => {
+    try {
+        const orderId = req.params.id;
+
+        const order = await Order.findByIdAndUpdate(
+            orderId,
+            { status: "Đã hủy" }, // ✅ đổi trạng thái theo model
+            { new: true }
+        );
+
+        if (!order) {
+            return res.status(404).json({ message: "Không tìm thấy đơn hàng" });
+        }
+
+        res.json({ message: "Đơn hàng đã được hủy", order });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Lỗi server khi hủy đơn hàng" });
     }
 };
