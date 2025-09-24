@@ -71,3 +71,24 @@ exports.getOrdersByEmail = async (req, res) => {
         res.status(500).json({ message: "Lỗi server khi lấy đơn hàng" });
     }
 };
+// Hủy đơn hàng
+exports.cancelOrder = async (req, res) => {
+    try {
+        const orderId = req.params.id;
+
+        const order = await Order.findByIdAndUpdate(
+            orderId,
+            { status: "Đã hủy" }, // ✅ đổi trạng thái theo model
+            { new: true }
+        );
+
+        if (!order) {
+            return res.status(404).json({ message: "Không tìm thấy đơn hàng" });
+        }
+
+        res.json({ message: "Đơn hàng đã được hủy", order });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Lỗi server khi hủy đơn hàng" });
+    }
+};

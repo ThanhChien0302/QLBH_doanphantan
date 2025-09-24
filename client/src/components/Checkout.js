@@ -1,15 +1,20 @@
 "use client";
 
 import { useCart } from "../context/CartContext";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import api from "../lib/api";
 
 export default function CheckoutPage() {
-    const { cart, clearCart } = useCart();
+    const { cart, removeFromCart } = useCart();
     const router = useRouter();
+    const searchParams = useSearchParams();
 
-    const [step, setStep] = useState(1); // bước 1: thông tin, bước 2: nhập mã
+    const itemsParam = searchParams.get("items"); // "id1,id2"
+    const selectedIds = itemsParam ? itemsParam.split(",") : [];
+    const selectedCartItems = cart.filter(item => selectedIds.includes(item._id));
+
+    const [step, setStep] = useState(1);
     const [form, setForm] = useState({
         fullName: "",
         phone: "",
@@ -19,12 +24,17 @@ export default function CheckoutPage() {
     const [code, setCode] = useState("");
     const [sending, setSending] = useState(false);
 
+    useEffect(() => {
+        if (selectedCartItems.length === 0) {
+            router.push("/products"); // không có sản phẩm được chọn
+        }
+    }, [selectedCartItems, router]);
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setForm(prev => ({ ...prev, [name]: value }));
     };
 
-    // Gửi mã xác nhận
     const handleSendCode = async () => {
         const { fullName, phone, address, email } = form;
         if (!fullName || !phone || !address || !email) {
@@ -35,31 +45,33 @@ export default function CheckoutPage() {
         try {
             await api.post("/orders/send-code", {
                 customer: { fullName, phone, address, email },
-                items: cart.map(item => ({ productId: item._id, quantity: item.quantity }))
+                items: selectedCartItems.map(item => ({ productId: item._id, quantity: item.quantity }))
             });
+<<<<<<< HEAD
             localStorage.setItem("email", email);
             alert("Mã xác nhận đã được gửi vào email. Vui lòng kiểm tra hộp thư!");
             setStep(2); // chuyển sang bước nhập mã
+=======
+            alert("Mã xác nhận đã gửi vào email!");
+            setStep(2);
+>>>>>>> ac53f39453e6c341a4bb91de813cd71c72541a37
         } catch (err) {
             console.error(err);
-            alert("Có lỗi xảy ra khi gửi mã. Vui lòng thử lại.");
+            alert("Có lỗi khi gửi mã, vui lòng thử lại.");
         } finally {
             setSending(false);
         }
     };
 
-    // Xác nhận mã và tạo đơn hàng chính thức
     const handleVerifyCode = async () => {
         if (!code) return alert("Vui lòng nhập mã xác nhận.");
 
         setSending(true);
         try {
-            await api.post("/orders/verify", {
-                email: form.email,
-                code
-            });
-            clearCart();
-            alert("Đơn hàng của bạn đã được xác nhận!");
+            await api.post("/orders/verify", { email: form.email, code });
+            // chỉ xóa các sản phẩm đã mua
+            selectedCartItems.forEach(item => removeFromCart(item._id));
+            alert("Đơn hàng đã xác nhận!");
             router.push("/products");
         } catch (err) {
             console.error(err);
@@ -69,10 +81,7 @@ export default function CheckoutPage() {
         }
     };
 
-    if (cart.length === 0) {
-        router.push("/products");
-        return null;
-    }
+    if (selectedCartItems.length === 0) return null;
 
     return (
         <div className="max-w-3xl mx-auto p-6 bg-white rounded-2xl shadow mt-8">
@@ -134,7 +143,7 @@ export default function CheckoutPage() {
 
             {step === 2 && (
                 <>
-                    <p className="mb-4">Nhập mã xác nhận được gửi vào email:</p>
+                    <p className="mb-4">Nhập mã xác nhận:</p>
                     <input
                         type="text"
                         value={code}

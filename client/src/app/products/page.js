@@ -23,7 +23,7 @@ export default function ProductsPage() {
                     <h1 className="text-3xl font-bold">📦 Cửa hàng quần áo</h1>
                     {role !== "admin" && (
                         <Link href="/cart">
-                            <button className="bg-yellow-500 text-black px-4 py-3 rounded hover:bg-yellow-600">
+                            <button className="bg-yellow-500 text-black px-4 py-3 font-bold rounded hover:bg-yellow-600">
                                 🛒 Giỏ hàng ({cart.length})
                             </button>
                         </Link>
