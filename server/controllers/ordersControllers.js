@@ -92,3 +92,39 @@ exports.cancelOrder = async (req, res) => {
         res.status(500).json({ message: "Lỗi server khi hủy đơn hàng" });
     }
 };
+// Lấy tất cả đơn hàng (chỉ admin)
+exports.getAllOrders = async (req, res) => {
+    try {
+        const orders = await Order.find()
+            .populate("items.productId")
+            .sort({ createdAt: -1 });
+
+        res.json(orders);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Lỗi server khi lấy tất cả đơn hàng" });
+    }
+};
+
+// Cập nhật trạng thái đơn hàng
+exports.updateOrderStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body; // "chờ xác nhận", "đã hoàn thành", "Đã hủy"
+
+        const order = await Order.findByIdAndUpdate(
+            id,
+            { status },
+            { new: true }
+        ).populate("items.productId");
+
+        if (!order) {
+            return res.status(404).json({ message: "Không tìm thấy đơn hàng" });
+        }
+
+        res.json({ message: "Cập nhật trạng thái thành công", order });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Lỗi server khi cập nhật trạng thái" });
+    }
+};
