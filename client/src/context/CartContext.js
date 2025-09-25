@@ -1,47 +1,55 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState, useRef } from "react";
 
 const CartContext = createContext();
 
-export function CartProvider({ children }) {
+export const CartProvider = ({ children }) => {
     const [cart, setCart] = useState([]);
 
-    // load từ localStorage khi khởi tạo
-    useEffect(() => {
-        const saved = localStorage.getItem("cart");
-        if (saved) setCart(JSON.parse(saved));
-    }, []);
+    // Ref để lưu callback cập nhật ProductList
+    const quantityChangeCallback = useRef(null);
 
-    // lưu lại khi giỏ thay đổi
-    useEffect(() => {
-        localStorage.setItem("cart", JSON.stringify(cart));
-    }, [cart]);
+    const setOnQuantityChange = (callback) => {
+        quantityChangeCallback.current = callback;
+    };
 
     const addToCart = (product) => {
         setCart((prev) => {
-            const exist = prev.find((p) => p._id === product._id);
-            if (exist) {
-                return prev.map((p) =>
-                    p._id === product._id ? { ...p, qty: p.qty + 1 } : p
+            const item = prev.find((p) => p._id === product._id);
+            if (item) {
+                // Tăng qty nếu đã có trong giỏ
+                const newCart = prev.map((p) =>
+                    p._id === product._id ? { ...p, qty: p.qty + product.qty } : p
                 );
+                quantityChangeCallback.current?.(product._id, product.qty); // giảm quantity trên ProductList
+                return newCart;
             }
-            return [...prev, { ...product, qty: 1 }];
+            quantityChangeCallback.current?.(product._id, product.qty); // giảm quantity trên ProductList
+            return [...prev, product];
         });
     };
 
-    const removeFromCart = (id) =>
-        setCart((prev) => prev.filter((p) => p._id !== id));
+    const removeFromCart = (productId) => {
+        setCart((prev) => {
+            const item = prev.find((p) => p._id === productId);
+            if (!item) return prev;
+            quantityChangeCallback.current?.(productId, -item.qty); // tăng lại quantity trên ProductList
+            return prev.filter((p) => p._id !== productId);
+        });
+    };
 
-    const clearCart = () => setCart([]);
+    const clearCart = () => {
+        // Tăng lại quantity tất cả sản phẩm trước khi clear
+        cart.forEach((item) => quantityChangeCallback.current?.(item._id, -item.qty));
+        setCart([]);
+    };
 
     return (
-        <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart }}>
+        <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart, setOnQuantityChange }}>
             {children}
         </CartContext.Provider>
     );
-}
+};
 
-export function useCart() {
-    return useContext(CartContext);
-}
+export const useCart = () => useContext(CartContext);

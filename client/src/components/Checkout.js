@@ -45,20 +45,16 @@ export default function CheckoutPage() {
         try {
             await api.post("/orders/send-code", {
                 customer: { fullName, phone, address, email },
-                items: selectedCartItems.map(item => ({ productId: item._id, quantity: item.quantity }))
+                items: selectedCartItems.map(item => ({
+                    productId: item._id,
+                    quantity: item.quantity
+                }))
             });
 
-            alert("Mã xác nhận đã gửi vào email!");
-            setStep(2);
-
-
-            localStorage.setItem("email", email);
+            // chỉ hiện 1 lần
             alert("Mã xác nhận đã được gửi vào email. Vui lòng kiểm tra hộp thư!");
+            localStorage.setItem("email", email);
             setStep(2); // chuyển sang bước nhập mã
-
-            alert("Mã xác nhận đã gửi vào email!");
-            setStep(2);
-
 
         } catch (err) {
             console.error(err);

@@ -51,3 +51,36 @@ exports.deleteProduct = async (req, res) => {
         res.status(400).json({ message: err.message });
     }
 };
+// Giảm số lượng sản phẩm 1 khi thêm vào giỏ
+exports.decreaseQuantity = async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.id);
+        if (!product) return res.status(404).json({ message: "Sản phẩm không tồn tại" });
+
+        if (product.quantity <= 0)
+            return res.status(400).json({ message: "Sản phẩm đã hết hàng" });
+
+        product.quantity -= 1;
+        await product.save();
+
+        res.json({ message: "Đã giảm 1 sản phẩm", quantity: product.quantity });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
+// Tăng số lượng 1 (khi xóa khỏi giỏ)
+exports.increaseQuantity = async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.id);
+        if (!product) return res.status(404).json({ message: "Sản phẩm không tồn tại" });
+
+        const { qty } = req.body; // số lượng muốn tăng
+        product.quantity += qty;  // tăng theo số lượng thực tế
+        await product.save();
+
+        res.json({ message: `Đã tăng ${qty} sản phẩm`, quantity: product.quantity });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
