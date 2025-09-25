@@ -56,7 +56,7 @@ export default function ProductsPage() {
                         {/* Chỉ hiển thị nếu là admin */}
                         {role === "admin" && (
                             <button
-                                onClick={() => router.push("/orders")}
+                                onClick={() => router.push("/orders-all")}
                                 className="bg-blue-500 text-black font-bold px-4 py-2 rounded hover:bg-blue-600"
                             >
                                 Xem đơn hàng đã đặt
