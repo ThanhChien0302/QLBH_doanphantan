@@ -100,10 +100,10 @@ export default function MyOrdersPage() {
                             <thead className="bg-gray-100 text-gray-700">
                                 <tr>
                                     <th className="border p-3 text-left">🆔 Mã đơn</th>
-                                    <th className="border p-3 text-left">📅 Ngày đặt</th>
+                                    <th className="border p-3 text-left w-40">📅 Ngày đặt</th>
                                     <th className="border p-2 text-left w-28">💳 Thanh toán</th>
-                                    <th className="border p-3 text-left w-60">📦 Sản phẩm</th>
-                                    <th className="border p-3 text-center">💰 Tổng tiền</th>
+                                    <th className="border p-3 text-left w-40">📦 Sản phẩm</th>
+                                    <th className="border p-3 text-center w-40">💰 Tổng tiền</th>
                                     <th className="border p-3 text-center w-40">📌 Trạng thái</th>
                                     <th className="border p-3 text-center">⭐ Đánh giá</th>
                                     <th className="border p-3 text-center">⚙️ Hành động</th>
@@ -113,12 +113,12 @@ export default function MyOrdersPage() {
                                 {orders.map(order => {
                                     const total = order.totalAmount || calcTotal(order.items);
                                     return (
-                                        <tr key={order._id} className="hover:bg-gray-50">
+                                        <tr key={order._id} className="hover:bg-blue-100">
                                             <td className="border p-3 font-bold">{order._id}</td>
                                             <td className="border p-3 font-bold">
                                                 {new Date(order.createdAt).toLocaleString()}
                                             </td>
-                                            <td className="border p-2 font-bold">{order.paymentMethod}</td>
+                                            <td className="border p-7 font-bold">{order.paymentMethod}</td>
                                             <td className="border p-2 font-bold">
                                                 {order.items.map(item => (
                                                     <div key={item.productId._id} className="mb-2">
@@ -146,11 +146,10 @@ export default function MyOrdersPage() {
                                                                     onClick={() =>
                                                                         handleRating(order._id, item.productId._id, star)
                                                                     }
-                                                                    className={
-                                                                        ratings[order._id + "_" + item.productId._id] >= star
+                                                                    className={`text-2xl font-bold focus:outline-none ${ratings[order._id + "_" + item.productId._id] >= star
                                                                             ? "text-yellow-500"
                                                                             : "text-gray-400"
-                                                                    }
+                                                                        }`}
                                                                 >
                                                                     ★
                                                                 </button>

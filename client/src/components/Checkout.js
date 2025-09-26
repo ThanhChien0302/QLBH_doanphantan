@@ -37,8 +37,15 @@ export default function CheckoutPage() {
 
     const handleSendCode = async () => {
         const { fullName, phone, address, email } = form;
+
         if (!fullName || !phone || !address || !email) {
             return alert("Vui lòng điền đầy đủ thông tin.");
+        }
+
+        // ✅ Kiểm tra số điện thoại phải 10 chữ số
+        const phoneRegex = /^\d{10}$/;
+        if (!phoneRegex.test(phone)) {
+            return alert("Số điện thoại phải gồm 10 chữ số và chỉ chứa số.");
         }
 
         setSending(true);
@@ -47,17 +54,14 @@ export default function CheckoutPage() {
                 customer: { fullName, phone, address, email },
                 items: selectedCartItems.map(item => ({
                     productId: item._id,
-                    quantity: item.qty   // ✅ Dùng qty trong giỏ hàng
+                    quantity: item.qty
                 }))
             });
 
             localStorage.setItem("email", email);
 
-            // chỉ hiện 1 lần
             alert("Mã xác nhận đã được gửi vào email. Vui lòng kiểm tra hộp thư!");
-            localStorage.setItem("email", email);
             setStep(2); // chuyển sang bước nhập mã
-
         } catch (err) {
             console.error(err);
             alert("Có lỗi khi gửi mã, vui lòng thử lại.");

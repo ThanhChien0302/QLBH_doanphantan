@@ -51,8 +51,8 @@ export default function OrdersAll() {
                             <th className="border p-2 text-left">Tổng tiền</th>
                             <th className="border p-2 text-left">Trạng thái</th>
                             <th className="border p-2 text-left">Sản phẩm</th>
-                            <th className="border p-2 text-left">Số sao</th>
-                            <th className="border p-2 text-center">Hành động</th>
+                            <th className="border p-2 text-center w-24">⭐ Đánh giá</th>
+                            <th className="border p-2 text-center w-36">⚙️ Hành động</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -77,7 +77,7 @@ export default function OrdersAll() {
                                                 đã hoàn thành
                                             </span>
                                         ) : order.status === "Đã hủy" ? (
-                                            <span className="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold ">
+                                            <span className="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">
                                                 Đã hủy
                                             </span>
                                         ) : (
@@ -97,35 +97,47 @@ export default function OrdersAll() {
                                         </ul>
                                     </td>
 
-                                    {/* Cột số sao đánh giá */}
-                                    <td className="border p-2">
-                                        <ul className="pl-3">
-                                            {order.items.map((item, idx) => (
-                                                <li key={idx}>
-                                                    {item.rating ? `${item.rating} ★` : "Chưa đánh giá"}
-                                                </li>
-                                            ))}
-                                        </ul>
+                                    {/* Cột đánh giá */}
+                                    <td className="border p-2 text-center">
+                                        {order.status === "đã hoàn thành" ? (
+                                            <div className="flex flex-col gap-1 items-center">
+                                                {order.items.map((item, idx) => (
+                                                    <div key={idx}>
+                                                        {[1, 2, 3, 4, 5].map((star) => (
+                                                            <span
+                                                                key={star}
+                                                                className={`text-yellow-500 text-lg`}
+                                                            >
+                                                                {item.rating >= star ? "★" : "☆"}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <span className="text-gray-400 italic">Chưa đánh giá</span>
+                                        )}
                                     </td>
 
+                                    {/* Cột hành động */}
                                     <td className="border p-2 text-center">
                                         {order.status === "chờ xác nhận" ? (
                                             <div className="flex flex-col gap-2 items-center">
                                                 <button
                                                     onClick={() => updateStatus(order._id, "đã hoàn thành")}
-                                                    className="bg-green-500 text-white px-3 py-1 rounded w-full"
+                                                    className="bg-green-500 text-white px-1 py-1 rounded font-bold w-32 hover:bg-green-600"
                                                 >
                                                     ✅ Hoàn thành
                                                 </button>
                                                 <button
                                                     onClick={() => updateStatus(order._id, "Đã hủy")}
-                                                    className="bg-red-500 text-white px-3 py-1 rounded w-full"
+                                                    className="bg-red-500 text-white px-1 py-1 rounded font-bold w-full hover:bg-red-600"
                                                 >
                                                     ❌ Hủy
                                                 </button>
                                             </div>
                                         ) : (
-                                            <em className="text-gray-500">Đã xử lý</em>
+                                            <em className="text-gray-500 font-semibold">Đã xử lý</em>
                                         )}
                                     </td>
                                 </tr>
