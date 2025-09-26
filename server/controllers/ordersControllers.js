@@ -129,3 +129,29 @@ exports.updateOrderStatus = async (req, res) => {
         res.status(500).json({ message: "Lỗi server khi cập nhật trạng thái" });
     }
 };
+exports.rateProduct = async (req, res) => {
+    try {
+        const { orderId, productId, rating } = req.body;
+
+        if (!orderId || !productId || !rating) {
+            return res.status(400).json({ message: "Thiếu dữ liệu" });
+        }
+
+        // Tìm order
+        const order = await Order.findById(orderId);
+        if (!order) return res.status(404).json({ message: "Không tìm thấy đơn hàng" });
+
+        // Tìm item trong order
+        const item = order.items.find(i => i.productId.toString() === productId);
+        if (!item) return res.status(404).json({ message: "Không tìm thấy sản phẩm trong đơn hàng" });
+
+        // Cập nhật rating
+        item.rating = rating;
+        await order.save();
+
+        res.json({ message: "Đánh giá thành công", order });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Lỗi server" });
+    }
+};

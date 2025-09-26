@@ -11,7 +11,8 @@ const orderSchema = new mongoose.Schema({
         {
             productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
             quantity: Number,
-            price: Number
+            price: Number,
+            rating: { type: Number, min: 1, max: 5, default: null } // ✅ rating có default null
         }
     ],
     paymentMethod: { type: String, default: "COD" },

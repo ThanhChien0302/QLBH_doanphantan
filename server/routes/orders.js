@@ -10,6 +10,8 @@ router.get("/orders-all", ordersController.getAllOrders);
 
 router.get("/:email", ordersController.getOrdersByEmail);
 router.put("/:id/status", ordersController.updateOrderStatus);
+router.put("/:id/cancel", ordersController.cancelOrder);
 
 
+router.put("/rate", ordersController.rateProduct);
 module.exports = router;

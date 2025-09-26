@@ -20,3 +20,4 @@ router.delete("/:id", auth, adminOnly, productController.deleteProduct);
 router.patch("/:id/decrease", auth, productController.decreaseQuantity);
 router.patch("/:id/increase", auth, productController.increaseQuantity);
 module.exports = router;
+

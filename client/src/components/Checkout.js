@@ -47,7 +47,7 @@ export default function CheckoutPage() {
                 customer: { fullName, phone, address, email },
                 items: selectedCartItems.map(item => ({
                     productId: item._id,
-                    quantity: item.quantity
+                    quantity: item.qty   // ✅ Dùng qty trong giỏ hàng
                 }))
             });
 
